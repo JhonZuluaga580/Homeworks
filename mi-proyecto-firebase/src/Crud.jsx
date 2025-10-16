@@ -1,74 +1,77 @@
 import { useState, useEffect } from 'react';
 import useCollection from './hooks/useCollection';
 
-const ItemManager = () => {
-  const { add, getAll, update, remove, results: items, isPending, error } = useCollection('items');
-  const [title, setTitle] = useState('');
-  const [editingId, setEditingId] = useState(null);
-  const [editingTitle, setEditingTitle] = useState('');
+const Crud = () => {
+  const { add, getAll, update, remove, results, isPending, error } = useCollection('items'); 
+  const [newName, setNewName] = useState('');
+  const [editId, setEditId] = useState(null);
+  const [editName, setEditName] = useState('');
 
   useEffect(() => {
     getAll();
-  }, [getAll]);
-
-  const handleCreate = async () => {
-    if (!title.trim()) return;
-    await add({ name: title });
-    setTitle('');
-    getAll();
+  }, []);
+  
+  const handleAdd = async () => {
+    if (newName) {
+      await add({ name: newName });
+      setNewName('');
+      getAll();
+    }
   };
 
-  const beginEdit = (id, currentName) => {
-    setEditingId(id);
-    setEditingTitle(currentName);
+  const startEdit = (id, currentName) => {
+    setEditId(id);
+    setEditName(currentName);
   };
 
-  const handleSave = async (id) => {
-    if (!editingTitle.trim()) return;
-    await update(id, { name: editingTitle });
-    setEditingId(null);
-    setEditingTitle('');
-    getAll();
+  const handleUpdate = async (id) => {
+    if (editName) {
+      await update(id, { name: editName });
+      setEditId(null);
+      setEditName('');
+      getAll();
+    }
   };
 
-  const handleRemove = async (id) => {
+  const handleDelete = async (id) => {
     await remove(id);
     getAll();
   };
 
   return (
     <div>
-      <h1>Gestor de items (Firestore)</h1>
-
+      <h1>CRUD con Firestore</h1>
       {error && <p>Error: {error}</p>}
       {isPending && <p>Cargando...</p>}
 
-      <input
-        type="text"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Nuevo item"
+      {}
+      <input 
+        type="text" 
+        value={newName} 
+        onChange={(e) => setNewName(e.target.value)} 
+        placeholder="Nuevo item" 
       />
-      <button onClick={handleCreate} disabled={isPending}>Agregar</button>
+      <button onClick={handleAdd}>Agregar</button>
 
+      {}
       <ul>
-        {items.map((item) => (
+        {results.map((item) => (
           <li key={item.id}>
-            {editingId === item.id ? (
+            {editId === item.id ? (
               <>
-                <input
-                  type="text"
-                  value={editingTitle}
-                  onChange={(e) => setEditingTitle(e.target.value)}
+                <input 
+                  type="text" 
+                  value={editName} 
+                  onChange={(e) => setEditName(e.target.value)} 
                 />
-                <button onClick={() => handleSave(item.id)}>Guardar</button>
-                <button onClick={() => setEditingId(null)}>Cancelar</button>
+                <button onClick={() => handleUpdate(item.id)}>Guardar</button>
+                <button onClick={() => setEditId(null)}>Cancelar</button>
               </>
             ) : (
               <>
                 {item.name}
-                <button onClick={() => beginEdit(item.id, item.name)}>Editar</button>
-                <button onClick={() => handleRemove(item.id)}>Eliminar</button>
+                <button onClick={() => startEdit(item.id, item.name)}>Editar</button>
+                <button onClick={() => handleDelete(item.id)}>Eliminar</button>
               </>
             )}
           </li>
@@ -78,4 +81,4 @@ const ItemManager = () => {
   );
 };
 
-export default ItemManager;
+export default Crud;
