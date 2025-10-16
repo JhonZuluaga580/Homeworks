@@ -1,48 +1,39 @@
-import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "../../../firebase/config";
-import { register, logout } from '../authSlice'
-import { signOut } from 'firebase/auth'
+import { auth, signInWithEmailAndPassword, signInWithPopup, googleProvider, signOut } from '../../../firebase/config';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { login, logout } from './authSlice';
 
-export const registerAuth = (email, password) => {
-    return async (dispatch) => {
-        const response = await createUserWithEmailAndPassword(auth, email, password)
-        if (response) {
-            await updateProfile(auth.currentUser, {
-                displayName: 'Jhon Zuluaga',
-                photoURL: ''
-            })
+export const startLoginWithEmailPassword = (email, password) => async (dispatch) => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const { uid, displayName, email: userEmail } = userCredential.user;
+    dispatch(login({ uid, displayName, email: userEmail }));
+  } catch (error) {
+    dispatch(logout(error.message));
+  }
+};
 
-            const { email } = response.user
-            dispatch(register({ email }))
-        } else{
-            throw new Error('login Failed')
-        }
-    }
-}
+export const startGoogleSignIn = () => async (dispatch) => {
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const { uid, displayName, email } = result.user;
+    dispatch(login({ uid, displayName, email }));
+  } catch (error) {
+    dispatch(logout(error.message));
+  }
+};
 
-export const googleSignIn = () => {
-    return async (dispatch) => {
-        const provider = new GoogleAuthProvider()
-        try {
-            const result = await signInWithPopup(auth, provider)
-            const { email, displayName, photoURL, uid } = result.user
-            dispatch(register({ email, displayName, photoURL, uid }))
-        } catch (error) {
-            console.error('Google sign-in failed', error)
-            throw error
-        }
-    }
-}
+export const startRegisterWithEmailPassword = (email, password, displayName) => async (dispatch) => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(userCredential.user, { displayName });
+    const { uid } = userCredential.user;
+    dispatch(login({ uid, displayName, email }));
+  } catch (error) {
+    dispatch(logout(error.message));
+  }
+};
 
-export const signOutAuth = () => {
-    return async (dispatch) => {
-        try {
-            await signOut(auth)
-            console.log('Sign out success')
-            dispatch(logout())
-        } catch (error) {
-            console.error('Sign out failed', error)
-            throw error
-        }
-    }
-}
+export const startLogout = () => async (dispatch) => {
+  await signOut(auth);
+  dispatch(logout());
+};
