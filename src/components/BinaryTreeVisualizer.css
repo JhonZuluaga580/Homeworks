@@ -1,0 +1,110 @@
+.tree-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+.controls {
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-bottom: 2px solid #ddd;
+}
+
+.controls h1 {
+  margin: 0 0 20px 0;
+  color: #333;
+}
+
+.search-section {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.search-section h3 {
+  margin-top: 0;
+  color: #555;
+}
+
+.search-section input {
+  padding: 8px 12px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  margin-right: 10px;
+  font-size: 16px;
+}
+
+.search-section button {
+  padding: 8px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.search-section button:hover {
+  background-color: #45a049;
+}
+
+.found {
+  color: #4CAF50;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.not-found {
+  color: #f44336;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.info-section {
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.info-section h3 {
+  margin-top: 0;
+  color: #555;
+}
+
+.info-section ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.info-section li {
+  padding: 5px 0;
+  color: #666;
+}
+
+.tree-visualization {
+  flex: 1;
+  background-color: #fafafa;
+  overflow: hidden;
+}
+
+/* Estilos para los nodos del árbol */
+.rd3t-node circle {
+  fill: #4CAF50;
+  stroke: #2E7D32;
+  stroke-width: 2px;
+}
+
+.rd3t-node text {
+  fill: #333;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.rd3t-link {
+  stroke: #666;
+  stroke-width: 2px;
+}
