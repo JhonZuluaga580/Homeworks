@@ -1,0 +1,89 @@
+.graph-visualizer {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.graph-legend {
+  padding: 20px;
+  background: #f8f9fa;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.graph-legend h3 {
+  margin: 0 0 12px 0;
+  color: #2c3e50;
+  font-size: 18px;
+}
+
+.legend-items {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 12px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-circle,
+.legend-square {
+  width: 20px;
+  height: 20px;
+}
+
+.legend-circle {
+  border-radius: 50%;
+}
+
+.legend-circle.person {
+  background: #3498db;
+  border: 2px solid #2980b9;
+}
+
+.legend-square {
+  border-radius: 4px;
+}
+
+.legend-square.city {
+  background: #e74c3c;
+  border: 2px solid #c0392b;
+}
+
+.legend-note {
+  color: #7f8c8d;
+  font-size: 13px;
+  margin: 4px 0;
+  font-style: italic;
+}
+
+.graph-container {
+  padding: 20px;
+  background: #fafafa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.graph-container svg {
+  border-radius: 8px;
+  cursor: grab;
+}
+
+.graph-container svg:active {
+  cursor: grabbing;
+}
+
+/* Estilos para los nodos en hover */
+.graph-container svg g:hover {
+  cursor: pointer;
+}
+
+.graph-container svg circle,
+.graph-container svg rect {
+  transition: all 0.2s ease;
+}
