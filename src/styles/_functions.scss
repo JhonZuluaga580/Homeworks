@@ -1,0 +1,38 @@
+@use 'sass:math';
+@use 'sass:color';
+
+// ========== SPACING FUNCTION ==========
+@function spacing($multiplier) {
+  @return $multiplier * 0.25rem;
+}
+
+// ========== ALPHA FUNCTION ==========
+@function alpha($color, $opacity) {
+  @return rgba($color, $opacity);
+}
+
+// ========== TINT FUNCTION (Mezclar con blanco) ==========
+@function tint($color, $percentage) {
+  @return color.mix(white, $color, $percentage);
+}
+
+// ========== SHADE FUNCTION (Mezclar con negro) ==========
+@function shade($color, $percentage) {
+  @return color.mix(black, $color, $percentage);
+}
+
+// ========== CONVERTIR PX A REM ==========
+@function rem($px, $base: 16) {
+  @return math.div($px, $base) * 1rem;
+}
+
+// ========== CALCULAR CONTRASTE ==========
+@function contrast-color($color) {
+  $luminance: (0.299 * color.red($color) + 0.587 * color.green($color) + 0.114 * color.blue($color)) / 255;
+  
+  @if $luminance > 0.5 {
+    @return #000;
+  } @else {
+    @return #fff;
+  }
+}

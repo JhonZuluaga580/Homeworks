@@ -1,0 +1,205 @@
+@use '../styles/variables' as *;
+@use '../styles/mixins' as *;
+@use '../styles/functions' as *;
+
+.cityPeopleContainer {
+  @include card($spacing-lg, $radius-lg);
+  margin-bottom: $spacing-lg;
+  @include slide-in(top, $transition-base);
+  
+  h2 {
+    margin-bottom: $spacing-lg;
+    color: $text-primary;
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    
+    // Animación de gradiente en el texto
+    background: $primary-color;
+    background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+.citiesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: $spacing-lg;
+  
+  @include responsive(md) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cityCard {
+  background: $bg-secondary;
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  border: 2px solid $border-color;
+  transition: all $transition-base;
+  position: relative;
+  overflow: hidden;
+  
+  // Efecto de brillo al hacer hover
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      45deg,
+      transparent 30%,
+      alpha(white, 0.1) 50%,
+      transparent 70%
+    );
+    transform: rotate(45deg);
+    transition: all $transition-slow;
+    opacity: 0;
+  }
+  
+  &:hover {
+    border-color: $city-color;
+    box-shadow: 0 4px 12px alpha($city-color, 0.2);
+    transform: translateY(-4px);
+    
+    &::before {
+      opacity: 1;
+      left: 100%;
+    }
+  }
+  
+  // Animación escalonada para cada tarjeta
+  @for $i from 1 through 10 {
+    &:nth-child(#{$i}) {
+      animation: slideInUp $transition-base ease-out;
+      animation-delay: $i * 0.1s;
+      animation-fill-mode: backwards;
+    }
+  }
+  
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+.cityHeader {
+  @include flex-between;
+  margin-bottom: $spacing-md;
+  padding-bottom: $spacing-md;
+  border-bottom: 2px solid $city-color;
+  position: relative;
+  
+  h3 {
+    margin: 0;
+    color: $city-color;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    
+    &::before {
+      content: '📍';
+      font-size: $font-size-2xl;
+    }
+  }
+}
+
+.peopleCount {
+  background: $city-color;
+  color: white;
+  padding: spacing(1) $spacing-md;
+  border-radius: $radius-full;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  box-shadow: $shadow-sm;
+  @include pulse(1.1);
+}
+
+.peopleList {
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.personItem {
+  @include flex-between;
+  padding: $spacing-md;
+  background: $bg-primary;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-sm;
+  transition: all $transition-fast;
+  cursor: pointer;
+  border: 1px solid transparent;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  &:hover {
+    background: tint($person-color, 95%);
+    border-color: $person-light;
+    transform: translateX(8px);
+    box-shadow: $shadow-md;
+  }
+}
+
+.personAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: $radius-full;
+  @include gradient($person-color, $person-dark);
+  color: white;
+  @include flex-center;
+  font-weight: $font-weight-bold;
+  font-size: $font-size-lg;
+  margin-right: $spacing-md;
+  box-shadow: $shadow-sm;
+  transition: all $transition-base;
+  
+  .personItem:hover & {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: $shadow-md;
+  }
+}
+
+.personInfo {
+  @include flex-column;
+  flex: 1;
+}
+
+.personName {
+  font-weight: $font-weight-semibold;
+  color: $text-primary;
+  font-size: $font-size-sm;
+  margin-bottom: spacing(1);
+}
+
+.personAge {
+  color: $text-secondary;
+  font-size: $font-size-xs;
+  
+  &::before {
+    content: '🎂 ';
+  }
+}
+
+.noPeople {
+  color: $text-light;
+  font-style: italic;
+  text-align: center;
+  padding: $spacing-xl;
+  font-size: $font-size-sm;
+}

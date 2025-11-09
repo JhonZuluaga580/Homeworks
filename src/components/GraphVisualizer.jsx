@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
-import './GraphVisualizer.css';
+import styles from './GraphVisualizer.module.scss';
 
 const GraphVisualizer = ({ graph }) => {
   const svgRef = useRef();
@@ -23,9 +23,44 @@ const GraphVisualizer = ({ graph }) => {
     // Crear simulación de fuerzas
     const simulation = d3.forceSimulation(data.nodes)
       .force('link', d3.forceLink(data.links).id(d => d.id).distance(150))
-      .force('charge', d3.forceManyBody().strength(-300))
+      .force('charge', d3.forceManyBody().strength(-400))
       .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('collision', d3.forceCollide().radius(30));
+      .force('collision', d3.forceCollide().radius(40));
+
+    // Definir gradientes
+    const defs = svg.append('defs');
+
+    // Gradiente para personas
+    const personGradient = defs.append('linearGradient')
+      .attr('id', 'person-gradient')
+      .attr('x1', '0%')
+      .attr('y1', '0%')
+      .attr('x2', '100%')
+      .attr('y2', '100%');
+    
+    personGradient.append('stop')
+      .attr('offset', '0%')
+      .attr('stop-color', '#5dade2');
+    
+    personGradient.append('stop')
+      .attr('offset', '100%')
+      .attr('stop-color', '#2980b9');
+
+    // Gradiente para ciudades
+    const cityGradient = defs.append('linearGradient')
+      .attr('id', 'city-gradient')
+      .attr('x1', '0%')
+      .attr('y1', '0%')
+      .attr('x2', '100%')
+      .attr('y2', '100%');
+    
+    cityGradient.append('stop')
+      .attr('offset', '0%')
+      .attr('stop-color', '#ec7063');
+    
+    cityGradient.append('stop')
+      .attr('offset', '100%')
+      .attr('stop-color', '#c0392b');
 
     // Crear las líneas (links)
     const link = svg.append('g')
@@ -34,7 +69,27 @@ const GraphVisualizer = ({ graph }) => {
       .join('line')
       .attr('stroke', '#95a5a6')
       .attr('stroke-width', 2)
-      .attr('stroke-opacity', 0.6);
+      .attr('stroke-opacity', 0.6)
+      .attr('stroke-dasharray', '5,5')
+      .style('filter', 'drop-shadow(0 1px 2px rgba(0,0,0,0.1))');
+
+    // Animación de las líneas
+    link.each(function() {
+      d3.select(this)
+        .attr('stroke-dashoffset', 10)
+        .transition()
+        .duration(20000)
+        .ease(d3.easeLinear)
+        .attr('stroke-dashoffset', 0)
+        .on('end', function repeat() {
+          d3.select(this)
+            .transition()
+            .duration(20000)
+            .ease(d3.easeLinear)
+            .attr('stroke-dashoffset', -20)
+            .on('end', repeat);
+        });
+    });
 
     // Crear grupos para los nodos
     const node = svg.append('g')
@@ -45,42 +100,71 @@ const GraphVisualizer = ({ graph }) => {
         .on('start', dragstarted)
         .on('drag', dragged)
         .on('end', dragended))
-      .on('click', (event, d) => handleNodeClick(d));
+      .on('click', (event, d) => handleNodeClick(d))
+      .style('cursor', 'pointer');
 
     // Agregar formas a los nodos
     node.each(function(d) {
       const g = d3.select(this);
       
       if (d.type === 'person') {
-        // Círculo para personas
+        // Círculo externo (halo)
+        g.append('circle')
+          .attr('r', 25)
+          .attr('fill', 'rgba(52, 152, 219, 0.2)')
+          .attr('class', 'node-halo');
+        
+        // Círculo principal para personas
         g.append('circle')
           .attr('r', 20)
-          .attr('fill', '#3498db')
+          .attr('fill', 'url(#person-gradient)')
           .attr('stroke', '#2980b9')
-          .attr('stroke-width', 3);
+          .attr('stroke-width', 3)
+          .attr('class', 'node-shape');
       } else {
-        // Cuadrado para ciudades
+        // Cuadrado externo (halo)
+        g.append('rect')
+          .attr('x', -30)
+          .attr('y', -30)
+          .attr('width', 60)
+          .attr('height', 60)
+          .attr('fill', 'rgba(231, 76, 60, 0.2)')
+          .attr('rx', 8)
+          .attr('class', 'node-halo');
+        
+        // Cuadrado principal para ciudades
         g.append('rect')
           .attr('x', -25)
           .attr('y', -25)
           .attr('width', 50)
           .attr('height', 50)
-          .attr('fill', '#e74c3c')
+          .attr('fill', 'url(#city-gradient)')
           .attr('stroke', '#c0392b')
           .attr('stroke-width', 3)
-          .attr('rx', 5);
+          .attr('rx', 5)
+          .attr('class', 'node-shape');
       }
     });
 
-    // Agregar texto a los nodos
+    // Agregar iconos a los nodos
+    node.append('text')
+      .text(d => d.type === 'person' ? '👤' : '🏙️')
+      .attr('text-anchor', 'middle')
+      .attr('dy', 7)
+      .attr('font-size', '18px')
+      .style('pointer-events', 'none')
+      .style('user-select', 'none');
+
+    // Agregar texto a los nodos (nombre)
     const text = node.append('text')
       .text(d => d.name.split('\n')[0])
       .attr('text-anchor', 'middle')
-      .attr('dy', 40)
-      .attr('font-size', '12px')
+      .attr('dy', 45)
+      .attr('font-size', '13px')
       .attr('font-weight', 'bold')
       .attr('fill', '#2c3e50')
-      .style('pointer-events', 'none');
+      .style('pointer-events', 'none')
+      .style('text-shadow', '1px 1px 2px rgba(255,255,255,0.8)');
 
     // Agregar subtítulo (edad para personas)
     node.filter(d => d.type === 'person')
@@ -90,45 +174,68 @@ const GraphVisualizer = ({ graph }) => {
         return lines[1] || '';
       })
       .attr('text-anchor', 'middle')
-      .attr('dy', 54)
-      .attr('font-size', '10px')
+      .attr('dy', 60)
+      .attr('font-size', '11px')
       .attr('fill', '#7f8c8d')
-      .style('pointer-events', 'none');
+      .style('pointer-events', 'none')
+      .style('text-shadow', '1px 1px 2px rgba(255,255,255,0.8)');
 
     // Efecto hover
-    node.on('mouseenter', function() {
-      d3.select(this).select('circle, rect')
+    node.on('mouseenter', function(event, d) {
+      // Resaltar nodo
+      d3.select(this).select('.node-shape')
         .transition()
         .duration(200)
-        .attr('r', function() {
-          return d3.select(this).node().tagName === 'circle' ? 24 : null;
-        })
-        .attr('width', function() {
-          return d3.select(this).node().tagName === 'rect' ? 60 : null;
-        })
-        .attr('height', function() {
-          return d3.select(this).node().tagName === 'rect' ? 60 : null;
-        })
-        .attr('x', function() {
-          return d3.select(this).node().tagName === 'rect' ? -30 : null;
-        })
-        .attr('y', function() {
-          return d3.select(this).node().tagName === 'rect' ? -30 : null;
-        });
-    })
-    .on('mouseleave', function() {
-      d3.select(this).select('circle')
-        .transition()
-        .duration(200)
-        .attr('r', 20);
+        .attr('r', d.type === 'person' ? 24 : null)
+        .attr('width', d.type === 'city' ? 60 : null)
+        .attr('height', d.type === 'city' ? 60 : null)
+        .attr('x', d.type === 'city' ? -30 : null)
+        .attr('y', d.type === 'city' ? -30 : null)
+        .style('filter', 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))');
       
-      d3.select(this).select('rect')
+      // Animar halo
+      d3.select(this).select('.node-halo')
         .transition()
         .duration(200)
-        .attr('width', 50)
-        .attr('height', 50)
-        .attr('x', -25)
-        .attr('y', -25);
+        .attr('r', d.type === 'person' ? 30 : null)
+        .attr('width', d.type === 'city' ? 70 : null)
+        .attr('height', d.type === 'city' ? 70 : null)
+        .attr('x', d.type === 'city' ? -35 : null)
+        .attr('y', d.type === 'city' ? -35 : null);
+
+      // Resaltar conexiones
+      link
+        .style('stroke', l => (l.source === d || l.target === d) ? '#2ecc71' : '#95a5a6')
+        .style('stroke-width', l => (l.source === d || l.target === d) ? 3 : 2)
+        .style('stroke-opacity', l => (l.source === d || l.target === d) ? 1 : 0.3);
+    })
+    .on('mouseleave', function(event, d) {
+      // Restaurar nodo
+      d3.select(this).select('.node-shape')
+        .transition()
+        .duration(200)
+        .attr('r', d.type === 'person' ? 20 : null)
+        .attr('width', d.type === 'city' ? 50 : null)
+        .attr('height', d.type === 'city' ? 50 : null)
+        .attr('x', d.type === 'city' ? -25 : null)
+        .attr('y', d.type === 'city' ? -25 : null)
+        .style('filter', 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))');
+      
+      // Restaurar halo
+      d3.select(this).select('.node-halo')
+        .transition()
+        .duration(200)
+        .attr('r', d.type === 'person' ? 25 : null)
+        .attr('width', d.type === 'city' ? 60 : null)
+        .attr('height', d.type === 'city' ? 60 : null)
+        .attr('x', d.type === 'city' ? -30 : null)
+        .attr('y', d.type === 'city' ? -30 : null);
+
+      // Restaurar conexiones
+      link
+        .style('stroke', '#95a5a6')
+        .style('stroke-width', 2)
+        .style('stroke-opacity', 0.6);
     });
 
     // Actualizar posiciones en cada tick
@@ -200,25 +307,51 @@ const GraphVisualizer = ({ graph }) => {
     };
   }, [data, graph]);
 
+  // Calcular estadísticas
+  const stats = {
+    totalPeople: graph.getNodesByType('person').length,
+    totalCities: graph.getNodesByType('city').length,
+    totalConnections: data.links.length
+  };
+
   return (
-    <div className="graph-visualizer">
-      <div className="graph-legend">
-        <h3>Leyenda:</h3>
-        <div className="legend-items">
-          <div className="legend-item">
-            <div className="legend-circle person"></div>
+    <div className={styles.graphVisualizer}>
+      <div className={styles.graphLegend}>
+        <h3>Leyenda del Grafo</h3>
+        <div className={styles.legendItems}>
+          <div className={styles.legendItem}>
+            <div className={`${styles.legendCircle} ${styles.person}`}></div>
             <span>Personas</span>
           </div>
-          <div className="legend-item">
-            <div className="legend-square city"></div>
+          <div className={styles.legendItem}>
+            <div className={`${styles.legendSquare} ${styles.city}`}></div>
             <span>Ciudades</span>
           </div>
         </div>
-        <p className="legend-note">💡 Haz clic en los nodos para ver información en la consola</p>
-        <p className="legend-note">🖱️ Arrastra los nodos para reorganizar el grafo</p>
+        <p className={styles.legendNote} data-emoji="💡">
+          Haz clic en los nodos para ver información en la consola
+        </p>
+        <p className={styles.legendNote} data-emoji="🖱️">
+          Arrastra los nodos para reorganizar el grafo
+        </p>
+        
+        <div className={styles.stats}>
+          <div className={styles.statCard}>
+            <h4>Personas</h4>
+            <p>{stats.totalPeople}</p>
+          </div>
+          <div className={styles.statCard}>
+            <h4>Ciudades</h4>
+            <p>{stats.totalCities}</p>
+          </div>
+          <div className={styles.statCard}>
+            <h4>Conexiones</h4>
+            <p>{stats.totalConnections}</p>
+          </div>
+        </div>
       </div>
 
-      <div className="graph-container">
+      <div className={styles.graphContainer}>
         <svg ref={svgRef}></svg>
       </div>
     </div>

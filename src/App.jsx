@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import GraphVisualizer from './components/GraphVisualizer';
 import CityPeopleList from './components/CityPeopleList';
 import { createFriendsAndCitiesGraph } from './data/friendsAndCitiesGraph';
-import './App.css';
+import styles from './App.module.scss';
+import './styles/global.scss';
 
 function App() {
   const [graph, setGraph] = useState(null);
@@ -14,20 +15,20 @@ function App() {
 
   if (!graph) {
     return (
-      <div className="loading">
-        <h2>Cargando grafo...</h2>
+      <div className={styles.loading}>
+        Cargando grafo...
       </div>
     );
   }
 
   return (
-    <div className="app">
-      <header className="app-header">
+    <div className={styles.app}>
+      <header className={styles.appHeader}>
         <h1>🌐 Grafo de Amigos y Ciudades</h1>
-        <p>Visualización de relaciones entre personas y ciudades</p>
+        <p>Visualización interactiva de relaciones sociales y geográficas</p>
       </header>
 
-      <main className="app-content">
+      <main className={styles.appContent}>
         <CityPeopleList graph={graph} />
         <GraphVisualizer graph={graph} />
       </main>

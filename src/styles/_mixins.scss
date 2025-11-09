@@ -1,0 +1,166 @@
+@use 'variables' as *;
+
+// ========== FLEXBOX MIXINS ==========
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+// ========== RESPONSIVE MIXINS ==========
+@mixin responsive($breakpoint) {
+  @if $breakpoint == sm {
+    @media (max-width: $breakpoint-sm) {
+      @content;
+    }
+  } @else if $breakpoint == md {
+    @media (max-width: $breakpoint-md) {
+      @content;
+    }
+  } @else if $breakpoint == lg {
+    @media (max-width: $breakpoint-lg) {
+      @content;
+    }
+  } @else if $breakpoint == xl {
+    @media (max-width: $breakpoint-xl) {
+      @content;
+    }
+  }
+}
+
+// ========== CARD MIXIN ==========
+@mixin card($padding: $spacing-lg, $radius: $radius-lg) {
+  background: $bg-primary;
+  padding: $padding;
+  border-radius: $radius;
+  box-shadow: $shadow-md;
+  transition: all $transition-base;
+  
+  &:hover {
+    box-shadow: $shadow-lg;
+    transform: translateY(-2px);
+  }
+}
+
+// ========== BUTTON MIXIN ==========
+@mixin button($bg-color, $text-color: white) {
+  background: $bg-color;
+  color: $text-color;
+  padding: $spacing-sm $spacing-lg;
+  border: none;
+  border-radius: $radius-md;
+  font-weight: $font-weight-semibold;
+  cursor: pointer;
+  transition: all $transition-base;
+  
+  &:hover {
+    background: darken($bg-color, 10%);
+    transform: translateY(-1px);
+    box-shadow: $shadow-md;
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// ========== GRADIENT MIXIN ==========
+@mixin gradient($start, $end, $deg: 135deg) {
+  background: linear-gradient($deg, $start, $end);
+}
+
+// ========== TRUNCATE TEXT ==========
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ========== ANIMATION MIXIN ==========
+@mixin fade-in($duration: $transition-base) {
+  animation: fadeIn $duration ease-in;
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+@mixin slide-in($direction: left, $duration: $transition-base) {
+  animation: slideIn#{$direction} $duration ease-out;
+  
+  @keyframes slideIn#{$direction} {
+    from {
+      opacity: 0;
+      @if $direction == left {
+        transform: translateX(-20px);
+      } @else if $direction == right {
+        transform: translateX(20px);
+      } @else if $direction == top {
+        transform: translateY(-20px);
+      } @else if $direction == bottom {
+        transform: translateY(20px);
+      }
+    }
+    to {
+      opacity: 1;
+      transform: translate(0, 0);
+    }
+  }
+}
+
+// ========== PULSE ANIMATION ==========
+@mixin pulse($scale: 1.05) {
+  animation: pulse 2s infinite;
+  
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale($scale);
+    }
+  }
+}
+
+// ========== SCROLLBAR MIXIN ==========
+@mixin custom-scrollbar($width: 8px, $track-color: $bg-secondary, $thumb-color: $primary-color) {
+  &::-webkit-scrollbar {
+    width: $width;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: $track-color;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: $thumb-color;
+    border-radius: $radius-full;
+    
+    &:hover {
+      background: darken($thumb-color, 10%);
+    }
+  }
+}
