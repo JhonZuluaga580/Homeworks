@@ -2,16 +2,15 @@
 @use './styles/mixins' as *;
 
 .app {
+  width: 100vw;
   min-height: 100vh;
+  box-sizing: border-box;
   background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
   padding: $spacing-xl;
-  
-  @media (max-width: 768px) {
-    padding: $spacing-md;
-  }
 }
 
 .container {
+  width: 100%;
   max-width: 1400px;
   margin: 0 auto;
 }
