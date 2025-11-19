@@ -1,0 +1,56 @@
+@use '../../styles/variables' as *;
+@use '../../styles/mixins' as *;
+
+.formContainer {
+  @include card($spacing-lg, $radius-lg);
+  margin-bottom: $spacing-lg;
+  @include slide-in(top, $transition-base);
+}
+
+.title {
+  margin: 0 0 $spacing-md 0;
+  color: $text-primary;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+}
+
+.form {
+  display: flex;
+  gap: $spacing-md;
+  
+  @media (max-width: 640px) {
+    flex-direction: column;
+  }
+}
+
+.input {
+  flex: 1;
+  padding: $spacing-md;
+  border: 2px solid $border-color;
+  border-radius: $radius-md;
+  font-size: $font-size-base;
+  outline: none;
+  transition: all $transition-fast;
+
+  &:focus {
+    border-color: $primary-color;
+    box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+  }
+
+  &::placeholder {
+    color: $text-light;
+  }
+}
+
+.submitButton {
+  @include button($primary-color, white);
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-xl;
+  white-space: nowrap;
+
+  @media (max-width: 640px) {
+    justify-content: center;
+  }
+}

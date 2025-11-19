@@ -1,0 +1,75 @@
+@use './styles/variables' as *;
+@use './styles/mixins' as *;
+
+.app {
+  min-height: 100vh;
+  background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+  padding: $spacing-xl;
+  
+  @media (max-width: 768px) {
+    padding: $spacing-md;
+  }
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header {
+  @include card($spacing-xl, $radius-lg);
+  margin-bottom: $spacing-lg;
+  text-align: center;
+  @include slide-in(top, $transition-base);
+}
+
+.mainTitle {
+  margin: 0 0 $spacing-sm 0;
+  @include gradient($primary-color, $secondary-color);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-bold;
+  
+  @media (max-width: 768px) {
+    font-size: $font-size-2xl;
+  }
+}
+
+.subtitle {
+  margin: 0;
+  color: $text-secondary;
+  font-size: $font-size-base;
+}
+
+.citiesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: $spacing-lg;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.emptyState {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: $spacing-2xl;
+  background: white;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-md;
+  
+  p {
+    margin: $spacing-sm 0;
+    color: $text-secondary;
+    font-size: $font-size-lg;
+    
+    &:first-child {
+      font-size: $font-size-2xl;
+      color: $text-primary;
+      font-weight: $font-weight-semibold;
+    }
+  }
+}
